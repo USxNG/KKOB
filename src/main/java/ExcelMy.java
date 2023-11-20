@@ -1,5 +1,4 @@
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -7,6 +6,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -14,7 +15,11 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import javax.swing.*;
 
-public class ExcelMy {
+public class ExcelMy extends JFrame {
+
+
+
+    private static final Logger LOGGER = LogManager.getLogger(ExcelMy.class);
 
     public static ArrayList<String> getArrayListFromXLS(String filePath) {
         ArrayList<String> result = new ArrayList<>();
@@ -27,6 +32,7 @@ public class ExcelMy {
             int rowNum = 0;
 
             while (rowIterator.hasNext()) {
+                final int currentRowNum = rowNum;  // Declare a final variable to capture the current value of rowNum
                 HSSFRow row = (HSSFRow) rowIterator.next();
                 HSSFCell cell = row.getCell(0);
 
@@ -34,21 +40,42 @@ public class ExcelMy {
                     try {
                         String cellValue = cell.getStringCellValue();
                         result.add(cellValue);
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        // В случае ошибки добавления значения в список, логируем ошибку
+                        LOGGER.error("Ошибка в маркировке Роснефть на строке: " + (currentRowNum + 1) +
+                                ", столбец: " + cell.getColumnIndex(), e);
+
+                        // Выводим сообщение пользователю
+                        SwingUtilities.invokeLater(() ->
+                                JOptionPane.showMessageDialog(null,
+                                        "Ошибка в маркировке Роснефть на строке: " + (currentRowNum + 1) +
+                                                ", столбец: " + cell.getColumnIndex(),
+                                        "Ошибка", JOptionPane.ERROR_MESSAGE)
+                        );
                     } catch (Exception e) {
-                        // В случае ошибки добавления значения в список, выводим сообщение с номером строки
-                        JOptionPane.showMessageDialog(null, "Ошибка в маркировке Роснефть на строке: " + (rowNum + 1),
-                                "Ошибка", JOptionPane.ERROR_MESSAGE);
-                        e.printStackTrace();
+                        // Обработка других исключений
+                        LOGGER.error("Необработанная ошибка на строке: " + (currentRowNum + 1), e);
+
+                        // Выводим сообщение пользователю
+                        SwingUtilities.invokeLater(() ->
+                                JOptionPane.showMessageDialog(null,
+                                        "Необработанная ошибка на строке: " + (currentRowNum + 1),
+                                        "Ошибка", JOptionPane.ERROR_MESSAGE)
+                        );
                     }
                 }
 
                 rowNum++;
             }
-
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Ошибка при чтении файла", e);
+            // Выводим сообщение пользователю
+            SwingUtilities.invokeLater(() ->
+                    JOptionPane.showMessageDialog(null,
+                            "Ошибка при чтении файла",
+                            "Ошибка", JOptionPane.ERROR_MESSAGE)
+            );
         }
-
         return result;
     }
 

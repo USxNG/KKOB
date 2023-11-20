@@ -22,36 +22,10 @@ public class ReplaceValues {
 
         String currentDirectory = System.getProperty("user.dir");
         System.out.println("Current working directory: " + currentDirectory);
-
-        {
-
-
-            // Пример использования метода
-//            String filePath = "src/main/resources/rosneft.xls";
-//            ArrayList<String> data = ExcelMy.getArrayListFromXLS(filePath);
-
-//            boolean success = ExcelMy.setArrayListToXLS(filePath,  getArrayListNewCable(data));
-//
-//            if (success) {
-//                System.out.println("Данные успешно записаны в файл.");
-//            } else {
-//                System.out.println("Произошел сбой при записи в файл.");
-//            }
-            // Выводим полученные данные
-//            System.out.println("Данные из файла:");
-//            for (String value : data) {
-//                System.out.println(value);
-//            }
-        }
-
-
         String inputString = "ККОМ-Цв-19х2х2,5-ЭмЭаН-В-КЧ-УТГ-1О-У1";
-
-
         SwingUtilities.invokeLater(() -> {
             createAndShowGUI();
         });
-
         // Пример использования метода
         if (filePath != null) {
             ArrayList<String> data = ExcelMy.getArrayListFromXLS(filePath);
@@ -66,8 +40,6 @@ public class ReplaceValues {
         }
         LOGGER.info("Your log message");
         LOGGER.info("Пример логирования: Эта информация будет записана в лог.");
-
-
     }
 
     private static void createAndShowGUI() {
@@ -77,6 +49,7 @@ public class ReplaceValues {
 
 // Создаем кнопку для выбора файла
         JButton chooseFileButton = new JButton("Выбрать файл");
+        JLabel selectedFileNameLabel = new JLabel("Выбранный файл: Нет");
 
 // Создаем кнопку "ЭТМИКАБ"
         JButton executeETMIKABButton = new JButton("ЭТМИКАБ");
@@ -86,10 +59,8 @@ public class ReplaceValues {
         JButton executeAPOLAXButton = new JButton("АПОЛАКС");
         executeAPOLAXButton.setEnabled(false); // По умолчанию неактивна до выбора файла
 
-// Создаем JLabel для отображения названия выбранного файла
-        JLabel selectedFileLabel = new JLabel("Выбранный файл: Нет");
 
-// Добавляем слушатель для кнопки выбора файла
+        // Добавляем слушатель для кнопки выбора файла
         chooseFileButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -101,14 +72,12 @@ public class ReplaceValues {
                 if (result == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
                     filePath = selectedFile.getAbsolutePath();
-                    selectedFileLabel.setText("Выбранный файл: " + selectedFile.getName());
+                    selectedFileNameLabel.setText("Выбранный файл: " + selectedFile.getName());
                     executeETMIKABButton.setEnabled(true);
                     executeAPOLAXButton.setEnabled(true);
                 }
             }
         });
-
-
 
 // Добавляем слушатель для кнопки "ЭТМИКАБ"
         executeETMIKABButton.addActionListener(new ActionListener() {
@@ -135,19 +104,14 @@ public class ReplaceValues {
                 // Ваш код для обработки нажатия кнопки "АПОЛАКС"
             }
         });
-
         // Создаем панель для компонентов
         JPanel panel = new JPanel();
         panel.add(chooseFileButton);
+        panel.add(selectedFileNameLabel); // Используем новый JLabel для отображения имени файла
         panel.add(executeETMIKABButton);
         panel.add(executeAPOLAXButton);
-
-        // Добавляем JLabel на панель
-        panel.add(selectedFileLabel);
-
         // Устанавливаем компоненты на фрейм
         frame.getContentPane().add(panel);
-
         // Устанавливаем размеры и отображаем окно
         frame.setSize(300, 500);
         frame.setLocationRelativeTo(null);
@@ -162,7 +126,14 @@ public class ReplaceValues {
 
     public static String returnETMIKAB(String inputString,String chOne) {
 
-        String[] s = splitArray(inputString, chOne);
+        try {
+            String[] s = splitArray(inputString, chOne);
+
+            if (s.length < 9) {
+                // Handle the case where the array does not have enough elements
+                throw new IllegalArgumentException("Invalid array length");
+            }
+
 
 
         String PogIspoln = s[7];
@@ -206,7 +177,6 @@ public class ReplaceValues {
         if (s[4].equals("Н")) Vodoblok = "";
 
         String ObolochkaCvet = s[5];
-//        String Obolochka =  String.valueOf( ObolochkaCvet.charAt(0));
         String Cvet = String.valueOf(ObolochkaCvet.charAt(1));
 
         String SpetsIspoln = s[6];
@@ -215,7 +185,6 @@ public class ReplaceValues {
         String Zapolnen = String.valueOf(SpetsIspoln.charAt(2));
 
         String UXL = s[8];
-
 
         // Создание отображения (HashMap) для сопоставления значений
         Map<String, String> valueKiPv = new HashMap<>();
@@ -332,8 +301,6 @@ public class ReplaceValues {
         valuetempIzolazia.put("П", "П");
         valuetempIzolazia.put("Т", "Т");
 
-
-
         var stringETMiKAB = "Кабель ЭТМИКАБ МК";
 
         var isolayazia = valuetempIzolazia.get(PogIspoln);
@@ -349,10 +316,7 @@ public class ReplaceValues {
 
         var PogIsplnenieNG = valuePogIspoln.get(PogIspoln);
         if (EXL.equals("Т")) PogIsplnenieNG = StringUtils.left(PogIsplnenieNG, 5);
-        // парный экран
 
-//        var numbercorepare
-//        var typedoubletrple;
         var OkLug = valueOMOBMM.get(KiPv);
         if (OkLug != null) sechenie = sechenie + OkLug;
 
@@ -365,20 +329,14 @@ public class ReplaceValues {
             NumberCoreSechenie = "";
             NumberCoreSechenie = NumberCoreSechenie + numbercorepare + "х(" + typedoubletrple + "х" + sechenie + ")" + Parniy;
 
-
         }
     }
-
-
 
         if ( Uf.equals("Н") || Uf==null) Uf = "";
         if ( UXL.contains("1")) Uf = "У";
         if (EXL.equals("Н") || EXL.equals("Т")) {
             if (UXL.contains("У")) {EXL = "HL";}
             else {EXL = "";}
-
-
-
 
         }
         if (EXL != null) EXL = valueSpetsIspoln.get(EXL);
@@ -397,10 +355,6 @@ public class ReplaceValues {
             Cvet = valueCvet.get(Cvet);
         }
 
-
-
-//        NumberCoreSechenie
-
         var result =
                 stringETMiKAB +
                         isolayazia +
@@ -414,11 +368,6 @@ public class ReplaceValues {
                         " " + Uf +
                         " " + Zapolnen +
                         " " + Cvet;
-
-
-
-
-
 
 
         if (valuePogIspoln.containsKey(PogIspoln)) {
@@ -443,8 +392,17 @@ public class ReplaceValues {
         value1UF.put("У1", "УФ");
 
         return result;
-
-    };
+        } catch (Exception e) {
+            // Log other exceptions and display a generic error message
+            LOGGER.error("Error processing inputString: " + inputString, e);
+            SwingUtilities.invokeLater(() ->
+                    JOptionPane.showMessageDialog(null,
+                            "Ошибка при обработке строки: " + inputString,
+                            "Ошибка", JOptionPane.ERROR_MESSAGE)
+            );
+            return "Error";
+        }
+    }
 
     public static ArrayList<String> getArrayListNewCable (ArrayList<String> arrayList) {
         ArrayList<String> newArrayListNewCable = new ArrayList<>();
