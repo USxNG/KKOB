@@ -12,11 +12,12 @@
         <maven.compiler.source>14</maven.compiler.source>
         <maven.compiler.target>14</maven.compiler.target>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.1</version>
+            <version>3.12.0</version> <!-- Use the latest version available -->
         </dependency>
 
         <dependency>
@@ -31,19 +32,16 @@
             <version>5.2.3</version>
         </dependency>
 
+        <!-- other dependencies -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
-            <version>2.14.1</version> <!-- Проверьте актуальную версию на сайте Log4j -->
+            <version>2.14.1</version> <!-- Use the latest version available -->
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>2.14.1</version> <!-- Проверьте актуальную версию на сайте Log4j -->
+            <version>2.14.1</version> <!-- Use the same version as log4j-api -->
         </dependency>
-
-
-
     </dependencies>
-
 </project>

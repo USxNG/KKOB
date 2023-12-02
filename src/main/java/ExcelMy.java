@@ -12,8 +12,20 @@ import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Iterator;
 
 import javax.swing.*;
+
+
 
 public class ExcelMy extends JFrame {
 
@@ -77,6 +89,91 @@ public class ExcelMy extends JFrame {
             );
         }
         return result;
+    }
+
+
+
+   public static int getColumnNumberWithTarget(String filePath, String target, int maxColumns) {
+        int columnNumber = -1;
+
+        try (FileInputStream fis = new FileInputStream(new File(filePath));
+             HSSFWorkbook workbook = new HSSFWorkbook(fis)) {
+
+            HSSFSheet sheet = workbook.getSheetAt(0);
+            Iterator<org.apache.poi.ss.usermodel.Row> rowIterator = sheet.iterator();
+
+            while (rowIterator.hasNext()) {
+                org.apache.poi.ss.usermodel.Row row = rowIterator.next();
+                Iterator<Cell> cellIterator = row.cellIterator();
+                int currentColumn = 0;
+
+                while (cellIterator.hasNext() && currentColumn < maxColumns) {
+                    HSSFCell cell = (HSSFCell) cellIterator.next();
+
+                    if (cell != null) {
+                        try {
+                            String cellValue = cell.getStringCellValue();
+                            if (cellValue.contains(target)) {
+                                // Найдено слово в ячейке, возвращаем номер столбца (нумерация с 1)
+                                columnNumber = cell.getColumnIndex();
+                                return columnNumber;
+                            }
+                        } catch (Exception e) {
+                            // Обработка ошибок при получении значения из ячейки
+                            e.printStackTrace();
+                        }
+                    }
+
+                    currentColumn++;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Обработка ошибок при чтении файла
+        }
+
+        return columnNumber;
+    }
+
+    public static ArrayList<String> getArrayListWithTarget(String filePath, String target, int maxColumns) {
+        ArrayList<String> columnValues = new ArrayList<>();
+
+        try (FileInputStream fis = new FileInputStream(new File(filePath));
+             HSSFWorkbook workbook = new HSSFWorkbook(fis)) {
+
+            HSSFSheet sheet = workbook.getSheetAt(0);
+            Iterator<org.apache.poi.ss.usermodel.Row> rowIterator = sheet.iterator();
+
+            while (rowIterator.hasNext()) {
+                org.apache.poi.ss.usermodel.Row row = rowIterator.next();
+                Iterator<Cell> cellIterator = row.cellIterator();
+                int currentColumn = 0;
+
+                while (cellIterator.hasNext() && currentColumn < maxColumns) {
+                    HSSFCell cell = (HSSFCell) cellIterator.next();
+
+                    if (cell != null) {
+                        try {
+                            String cellValue = cell.getStringCellValue();
+                            if (cellValue.contains(target)) {
+                                // Найдено слово в ячейке, добавляем значение в ArrayList
+                                columnValues.add(cellValue);
+                            }
+                        } catch (Exception e) {
+                            // Обработка ошибок при получении значения из ячейки
+                            e.printStackTrace();
+                        }
+                    }
+
+                    currentColumn++;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Обработка ошибок при чтении файла
+        }
+
+        return columnValues;
     }
 
     public static boolean setArrayListToXLS(String filePath, ArrayList<String> data, int numberOfRowMinusOne) {
